@@ -8,14 +8,20 @@ import java.util.concurrent.TimeUnit;
 
 public class ListsTestPerformance {
 
+    protected static final boolean ADD_AT_THE_BEGINNING = true;
+    protected static final boolean ADD_AT_THE_MIDDLE    = false;
+    protected static final boolean ADD_AT_THE_END       = false;
+
+
     public static void main(String[] args) {
 
-        int samples = 100000;
-        performanceTest(samples);
-        // performanceTest(samples * 5);
-        // performanceTest(samples * 10);
-        // performanceTest(samples * 100);
-
+        for (int i = 0; i < 4; i++) {
+            int samples = 100000;
+            // performanceTest(samples);
+            // performanceTest(samples * 5);
+            // performanceTest(samples * 10);
+            performanceTest(samples * 100);
+        }
         System.exit(0);
     }
 
@@ -30,9 +36,9 @@ public class ListsTestPerformance {
 
         operationAdd(samples, arrayList, linkedList, vectorList);
 
-        operationGet(samples, arrayList, linkedList, vectorList);
+        // operationGet(samples, arrayList, linkedList, vectorList);
 
-        operationRemove(samples, arrayList, linkedList, vectorList);
+        // operationRemove(samples, arrayList, linkedList, vectorList);
 
         System.out.println();
     }
@@ -42,9 +48,21 @@ public class ListsTestPerformance {
 
         System.out.println(">> Operation <add>:  ");
 
-        listAdd("ArrayList add", samples, arrayList);
-        listAdd("LinkedList add", samples, linkedList);
-        listAdd("Vector add", samples, vectorList);
+        if (ADD_AT_THE_BEGINNING) {
+            // listAddAtTheBeginning("ArrayList add", samples, arrayList);
+            listAddAtTheBeginning("LinkedList add", samples, linkedList);
+            // listAddAtTheBeginning("Vector add", samples, vectorList);
+        }
+        else if (ADD_AT_THE_MIDDLE) {
+            listAddAtInTheMiddle("ArrayList add", samples, arrayList);
+            listAddAtInTheMiddle("LinkedList add", samples, linkedList);
+            listAddAtInTheMiddle("Vector add", samples, vectorList);
+        }
+        else if (ADD_AT_THE_END) {
+            listAddAtTheEnd("ArrayList add", samples, arrayList);
+            listAddAtTheEnd("LinkedList add", samples, linkedList);
+            listAddAtTheEnd("Vector add", samples, vectorList);
+        }
 
         System.out.println();
     }
@@ -54,9 +72,9 @@ public class ListsTestPerformance {
 
         System.out.println(">> Operation <get>:  ");
 
-        listGet("ArrayList get", samples, arrayList);
-        listGet("LinkedList get", samples, linkedList);
-        listGet("Vector get", samples, vectorList);
+        listGet("ArrayList get", arrayList);
+        listGet("LinkedList get", linkedList);
+        listGet("Vector get", vectorList);
 
         System.out.println();
     }
@@ -66,9 +84,9 @@ public class ListsTestPerformance {
 
         System.out.println(">> Operation <remove>:  ");
 
-        listRemove("ArrayList remove", samples, arrayList);
-        listRemove("LinkedList remove", samples, linkedList);
-        listRemove("Vector remove", samples, vectorList);
+        listRemove("ArrayList remove", arrayList);
+        listRemove("LinkedList remove", linkedList);
+        listRemove("Vector remove", vectorList);
 
         System.out.println();
     }
@@ -82,26 +100,24 @@ public class ListsTestPerformance {
     }
 
 
-    private static void listGet(String type, int samples, List<Integer> list) {
+    private static void listGet(String type, List<Integer> list) {
 
-        long startTime;
-        long endTime;
+        int size = list.size();
+        long startTime = System.nanoTime();
 
-        startTime = System.nanoTime();
-
-        for (int i = 0; i < samples; i++) {
+        for (int i = 0; i < size; i++) {
             list.get(i);
         }
-        endTime = System.nanoTime();
+        long endTime = System.nanoTime();
         printResults(type, startTime, endTime);
     }
 
 
-    private static void listAdd(String type, int samples, List<Integer> list) {
+    private static void listAddAtTheEnd(String type, int size, List<Integer> list) {
 
         long startTime = System.nanoTime();
 
-        for (int i = 0; i < samples; i++) {
+        for (int i = 0; i < size; i++) {
             list.add(i);
         }
         long endTime = System.nanoTime();
@@ -109,17 +125,39 @@ public class ListsTestPerformance {
     }
 
 
-    private static void listRemove(String type, int samples, List<Integer> list) {
+    private static void listAddAtTheBeginning(String type, int size, List<Integer> list) {
 
-        long startTime;
-        long endTime;
+        long startTime = System.nanoTime();
 
-        startTime = System.nanoTime();
+        for (int i = 0; i < size; i++) {
+            list.add(0, i);
+        }
+        long endTime = System.nanoTime();
+        printResults(type, startTime, endTime);
+    }
 
-        for (int i = samples - 1; i >= 0; i--) {
+
+    private static void listAddAtInTheMiddle(String type, int size, List<Integer> list) {
+
+        long startTime = System.nanoTime();
+
+        for (int i = 0; i < size; i++) {
+            list.add(i / 2, i);
+        }
+        long endTime = System.nanoTime();
+        printResults(type, startTime, endTime);
+    }
+
+
+    private static void listRemove(String type, List<Integer> list) {
+
+        int size = list.size();
+        long startTime = System.nanoTime();
+
+        for (int i = size - 1; i >= 0; i--) {
             list.remove(i);
         }
-        endTime = System.nanoTime();
+        long endTime = System.nanoTime();
         printResults(type, startTime, endTime);
     }
 
